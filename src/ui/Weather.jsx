@@ -4,13 +4,13 @@ import axios from "axios";
 
 function Weather() {
     const [weatherData, setWeatherData] = useState(null);
-    const [city, setCity] = useState(localStorage.getItem('weatherCity') || "Moscow");
+    const [city, setCity] = useState("Moscow");
     const [inputCity, setInputCity] = useState("");
     const [lang, setLang] = useState("EN");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
+    const API_KEY = "9aca33f9851e986e2000363811ce4c03"
 
     const getWeather = useCallback(async () => {
         if (!inputCity.trim()) return;
@@ -24,7 +24,6 @@ function Weather() {
             );
             setWeatherData(response.data);
             setCity(inputCity);
-            localStorage.setItem('weatherCity', inputCity);
         } catch (error) {
             console.error("Error fetching weather: ", error);
             setError(lang === "ru" ? "Город не найден" : "City not found");
