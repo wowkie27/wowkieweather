@@ -91,10 +91,18 @@ function Weather() {
         const absoluteHours = Math.abs(hours);
         return `GMT${sign}${absoluteHours}`;
     }; 
-    const cleanInputString = (str) => {
-        return str
-          .replace(/\s+/g, ' ')     // Заменяет множественные пробелы на один
-          .replace(/^\s+|\s+$/g, ''); // Удаляет пробелы в начале и конце
+    const cleanCityInput = (input) => {
+        return input
+          .replace(/\s+/g, ' ')      
+          .replace(/^\s+|\s+$/g, ''); 
+      };
+    const handleInputChange = (e) => {
+        setInputCity(e.target.value);
+      };
+      
+      const handleInputBlur = (e) => {
+        const cleanedValue = cleanCityInput(e.target.value);
+        setInputCity(cleanedValue);
       };
 
     return (
@@ -112,7 +120,8 @@ function Weather() {
                         type="text"
                         className="city-input"
                         value={inputCity}
-                        onChange={(e) => setInputCity(cleanInputString(e.target.value))}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
                         placeholder={lang === "ru" ? "Введите город..." : "Enter city..."}
                         aria-label={lang === "ru" ? "Город для поиска погоды" : "City for weather search"}
                     />
