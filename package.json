@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://wowkie27.github.io/wowkieweather",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
