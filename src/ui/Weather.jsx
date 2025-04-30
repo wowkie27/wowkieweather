@@ -9,53 +9,92 @@ function Weather() {
     const [lang, setLang] = useState("EN");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [isOnline, setIsOnline] = useState(true);
 
     const API_KEY = "9aca33f9851e986e2000363811ce4c03"
 
+    useEffect(() => {
+        const handleOnline = () => setIsOnline(true);
+        const handleOffline = () => setIsOnline(false);
+        
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+        
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, []);
+
     const getWeather = useCallback(async () => {
         if (!inputCity.trim()) return;
+        if (!isOnline) {
+            setError(lang === "ru" ? "Нет интернет-соединения" : "No internet connection");
+            return;
+        }
         
         setLoading(true);
         setError(null);
         
         try {
+            // Добавляем timestamp для предотвращения кэширования на мобильных
+            const timestamp = Date.now();
             const response = await axios.get(
-                `https://api.openweathermap.org/data/2.5/weather?q=${inputCity}&appid=${API_KEY}&units=metric&lang=${lang}`
+                `https://api.openweathermap.org/data/2.5/weather?q=${inputCity}&appid=${API_KEY}&units=metric&lang=${lang}&_=${timestamp}`
             );
+            
             setWeatherData(response.data);
             setCity(inputCity);
+            
+            // Асинхронное сохранение для мобильных браузеров
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('weatherCity', inputCity);
+            }
         } catch (error) {
             console.error("Error fetching weather: ", error);
             setError(lang === "ru" ? "Город не найден" : "City not found");
         } finally {
             setLoading(false);
         }
-    }, [inputCity, lang,API_KEY]);
+    }, [inputCity, lang, isOnline,API_KEY]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        // Для мобильных: закрытие клавиатуры после отправки
+        if (document.activeElement) document.activeElement.blur();
         getWeather();
     };
 
     const toggleLang = () => {
-        setLang(prevLang => prevLang === "ru" ? "en" : "ru");
+        const newLang = lang === "ru" ? "en" : "ru";
+        setLang(newLang);
     };
 
     useEffect(() => {
         setInputCity(city);
-        getWeather();
+        // Задержка для мобильных устройств
+        const timer = setTimeout(() => {
+            getWeather();
+        }, 300);
+        
+        return () => clearTimeout(timer);
     }, []);
 
     const formatTimeWithTimezone = (timestamp, timezone) => {
-        const date = new Date((timestamp + timezone) * 1000);
-        return date.toUTCString().split(' ')[4].substring(0, 5); 
-      };
-      const getGMTOffsetString = (timezoneSeconds) => {
+        try {
+            const date = new Date((timestamp + timezone) * 1000);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        } catch {
+            return '--:--';
+        }
+    };
+
+    const getGMTOffsetString = (timezoneSeconds) => {
         const hours = timezoneSeconds / 3600;
         const sign = hours >= 0 ? '+' : '-';
         const absoluteHours = Math.abs(hours);
         return `GMT${sign}${absoluteHours}`;
-      };  
+    }; 
 
     return (
         <div className="weather-app">
