@@ -1,0 +1,36 @@
+{
+  "coord": {
+    "lon": 37.6156,
+    "lat": 55.7522
+  },
+  "weather": [
+    {
+      "id": 803,
+      "main": "Clouds",
+      "description": "облачно с прояснениями",
+      "icon": "04d"
+    }
+  ],
+  "main": {
+    "temp": 18.5,
+    "feels_like": 17.2,
+    "pressure": 1012,
+    "humidity": 65
+  },
+  "wind": {
+    "speed": 3.1,
+    "deg": 210
+  },
+  "clouds": {
+    "all": 75
+  },
+  "sys": {
+    "country": "RU",
+    "sunrise": 1641525367,
+    "sunset": 1641556789
+  },
+  "timezone": 10800,
+  "id": 524901,
+  "name": "Moscow",
+  "cod": 200
+}
