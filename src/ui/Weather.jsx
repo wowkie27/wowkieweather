@@ -37,7 +37,6 @@ function Weather() {
         setError(null);
         
         try {
-            // Добавляем timestamp для предотвращения кэширования на мобильных
             const timestamp = Date.now();
             const response = await axios.get(
                 `https://api.openweathermap.org/data/2.5/weather?q=${inputCity}&appid=${API_KEY}&units=metric&lang=${lang}&_=${timestamp}`
@@ -46,7 +45,6 @@ function Weather() {
             setWeatherData(response.data);
             setCity(inputCity);
             
-            // Асинхронное сохранение для мобильных браузеров
             if (typeof window !== 'undefined') {
                 localStorage.setItem('weatherCity', inputCity);
             }
@@ -60,7 +58,6 @@ function Weather() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Для мобильных: закрытие клавиатуры после отправки
         if (document.activeElement) document.activeElement.blur();
         getWeather();
     };
@@ -72,7 +69,6 @@ function Weather() {
 
     useEffect(() => {
         setInputCity(city);
-        // Задержка для мобильных устройств
         const timer = setTimeout(() => {
             getWeather();
         }, 300);
@@ -95,6 +91,11 @@ function Weather() {
         const absoluteHours = Math.abs(hours);
         return `GMT${sign}${absoluteHours}`;
     }; 
+    const cleanInputString = (str) => {
+        return str
+          .replace(/\s+/g, ' ')     // Заменяет множественные пробелы на один
+          .replace(/^\s+|\s+$/g, ''); // Удаляет пробелы в начале и конце
+      };
 
     return (
         <div className="weather-app">
@@ -111,7 +112,7 @@ function Weather() {
                         type="text"
                         className="city-input"
                         value={inputCity}
-                        onChange={(e) => setInputCity(e.target.value)}
+                        onChange={(e) => setInputCity(cleanInputString(e.target.value))}
                         placeholder={lang === "ru" ? "Введите город..." : "Enter city..."}
                         aria-label={lang === "ru" ? "Город для поиска погоды" : "City for weather search"}
                     />
